@@ -17,7 +17,7 @@ jobs:
           echo "$uhost" >> foo
           extra=$(jq -r .inputs.extra "$GITHUB_EVENT_PATH")
           echo "$extra" >> foo
-          echo "$uhost" "$extra"
+          echo XXX "$uhost" "$extra"
       - name: shell
         run: |
           exit 0
