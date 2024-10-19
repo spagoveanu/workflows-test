@@ -8,16 +8,16 @@ on:
 jobs:
   shell:
     runs-on: ubuntu-latest
-    env:
-      WTF: boo
     steps:
       - uses: actions/checkout@v4
       - name: test-env
+        env:
+          WTF: boo
         run: |
           echo "::add-mask::$WTF"
           echo "$WTF" >> foo
           uhost=$(jq -r .inputs.uhost "$GITHUB_EVENT_PATH")
-          : "::add-mask::$uhost"
+          echo "::add-mask::$uhost"
           echo "$uhost" >> foo
           extra=$(jq -r .inputs.extra "$GITHUB_EVENT_PATH")
           echo "$extra" >> foo
@@ -31,6 +31,8 @@ jobs:
           mkdir -m 0700 ssh
           ssh-keygen -N '' -f ssh/key
           /usr/sbin/sshd -o PidFile=null -De -f /dev/null -p 9797 -h ssh/key &
+          uhost=$(jq -r .inputs.uhost "$GITHUB_EVENT_PATH")
+          echo ZZZ "::add-mask::$uhost"
           sleep 1
           echo addr ---------------------
           ip addr || :
