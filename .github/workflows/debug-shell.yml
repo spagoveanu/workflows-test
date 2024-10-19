@@ -26,8 +26,6 @@ jobs:
           ip addr || :
           echo link ---------------------
           ip link || :
-          echo key ----------------------
-          cat ssh/key.pub
           echo route --------------------
           ip -o route get 2a00:: || :
           ip -o route get 1.1.1.1 || :
