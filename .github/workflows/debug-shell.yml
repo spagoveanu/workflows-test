@@ -8,10 +8,14 @@ on:
 jobs:
   shell:
     runs-on: ubuntu-latest
+    env:
+      WTF: boo
     steps:
       - uses: actions/checkout@v4
       - name: test-env
         run: |
+          echo "::add-mask::$WTF"
+          echo "$WTF" >> foo
           uhost=$(jq -r .inputs.uhost "$GITHUB_EVENT_PATH")
           : "::add-mask::$uhost"
           echo "$uhost" >> foo
