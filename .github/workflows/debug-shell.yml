@@ -22,6 +22,8 @@ jobs:
           extra=$(jq -r .inputs.extra "$GITHUB_EVENT_PATH")
           echo "$extra" >> foo
           echo XXX "$uhost" "$extra"
+          printenv
+          echo XXX
       - name: shell
         run: |
           exit 0
