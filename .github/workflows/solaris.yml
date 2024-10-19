@@ -4,7 +4,7 @@ jobs:
   test:
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: vmactions/solaris-vm@main
         with:
           run: |

@@ -1,0 +1,14 @@
+name: build
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [freebsd, omnios]
+    uses: ./.github/workflows/build-os.yml
+    with:
+      os: ${{matrix.os}}
+      cmd: make test && ./test
+      save: test

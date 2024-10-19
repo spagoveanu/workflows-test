@@ -1,0 +1,43 @@
+name: debug shell
+on:
+  workflow_dispatch:
+    inputs:
+      uhost:
+      extra:
+        default: whatever
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: test-env
+        run: |
+          uhost=$(jq -r .inputs.uhost "$GITHUB_EVENT_PATH")
+          : "::add-mask::$uhost"
+          echo "$uhost" >> foo
+          extra=$(jq -r .inputs.extra "$GITHUB_EVENT_PATH")
+          echo "$extra" >> foo
+          echo "$uhost" "$extra"
+      - name: shell
+        run: |
+          exit 0
+          rm -fr ssh
+          mkdir -m 0700 ssh
+          ssh-keygen -N '' -f ssh/key
+          /usr/sbin/sshd -o PidFile=null -De -f /dev/null -p 9797 -h ssh/key &
+          sleep 1
+          echo addr ---------------------
+          ip addr || :
+          echo link ---------------------
+          ip link || :
+          echo key ----------------------
+          cat ssh/key.pub
+          echo route --------------------
+          ip -o route get 2a00:: || :
+          ip -o route get 1.1.1.1 || :
+          while sleep 30 && [ -r latch ]; do :; done
+          pkill -P $$
+          echo DONE
+      - uses: actions/upload-artifact@v4
+        with: {name: foo, path: foo}
+

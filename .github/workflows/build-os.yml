@@ -1,0 +1,48 @@
+on:
+  workflow_call:
+    inputs:
+      os: { type: string }
+      cmd: { type: string }
+      save: { type: string }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: openbsd
+        if: inputs.os == 'openbsd'
+        uses: vmactions/openbsd-vm@main
+        with:
+          run: ${{inputs.cmd}}
+
+      - name: netbsd
+        if: inputs.os == 'netbsd'
+        uses: vmactions/netbsd-vm@main
+        with:
+          run: ${{inputs.cmd}}
+
+      - name: freebsd
+        if: inputs.os == 'freebsd'
+        uses: vmactions/freebsd-vm@main
+        with:
+          run: ${{inputs.cmd}}
+
+      - name: solaris
+        if: inputs.os == 'solaris'
+        uses: vmactions/solaris-vm@main
+        with:
+          run: ${{inputs.cmd}}
+
+      - name: omnios
+        if: inputs.os == 'omnios'
+        uses: vmactions/omnios-vm@main
+        with:
+          run: ${{inputs.cmd}}
+
+      - name: save
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{inputs.save}}-${{inputs.os}}
+          path: ${{inputs.save}}

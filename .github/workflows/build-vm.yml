@@ -1,0 +1,17 @@
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: build
+        uses: vmactions/freebsd-vm@main
+        with:
+          run: make test && ./test
+      - name: save
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-freebsd
+          path: test
