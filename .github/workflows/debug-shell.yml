@@ -32,6 +32,7 @@ jobs:
           ssh-keygen -N '' -f ssh/key
           /usr/sbin/sshd -o PidFile=null -De -f /dev/null -p 9797 -h ssh/key &
           uhost=$(jq -r .inputs.uhost "$GITHUB_EVENT_PATH")
+          id 
           echo ZZZ "::add-mask::$uhost"
           sleep 1
           echo addr ---------------------
