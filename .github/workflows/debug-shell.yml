@@ -3,6 +3,10 @@ on:
   workflow_dispatch:
     inputs:
       uhost:
+      uport:
+        default: 9797
+      lport:
+        default: 9798
       extra:
         default: whatever
 jobs:
@@ -10,31 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: test-env
-        env:
-          WTF: boo
-        run: |
-          echo "::add-mask::$WTF"
-          echo "$WTF" >> foo
-          uhost=$(jq -r .inputs.uhost "$GITHUB_EVENT_PATH")
-          echo "::add-mask::$uhost"
-          echo "$uhost" >> foo
-          extra=$(jq -r .inputs.extra "$GITHUB_EVENT_PATH")
-          echo "$extra" >> foo
-          echo XXX "$uhost" "$extra"
-          printenv
-          echo XXX
       - name: shell
         run: |
-          exit 0
-          rm -fr ssh
-          mkdir -m 0700 ssh
-          ssh-keygen -N '' -f ssh/key
-          /usr/sbin/sshd -o PidFile=null -De -f /dev/null -p 9797 -h ssh/key &
           uhost=$(jq -r .inputs.uhost "$GITHUB_EVENT_PATH")
+          uport=$(jq -r .inputs.uport "$GITHUB_EVENT_PATH")
+          lport=$(jq -r .inputs.lport "$GITHUB_EVENT_PATH")
+          echo "::add-mask::$uhost" "::add-mask::$uport" "::add-mask::$lport"
           id 
-          echo ZZZ "::add-mask::$uhost"
-          sleep 1
           echo addr ---------------------
           ip addr || :
           echo link ---------------------
@@ -47,6 +33,7 @@ jobs:
           while sleep 30 && [ -r latch ]; do :; done
           pkill -P $$
           echo DONE
+          :
       - uses: actions/upload-artifact@v4
         with: {name: foo, path: foo}
 
