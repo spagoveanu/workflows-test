@@ -1,0 +1,26 @@
+name: debug shell ver 2
+on:
+  workflow_dispatch:
+    inputs:
+      port:
+        default: 9797
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - name: warp
+        uses: fscarmen/warp-on-actions@v1.2
+      - name: sshd
+        run: |
+          echo link ---------------------
+          ip link
+          echo addr ---------------------
+          ip addr
+          echo sshd ---------------------
+          mkdir -m 0700 ssh
+          ssh-keygen -qN '' -f ssh/srv-key
+          /usr/sbin/sshd -o PidFile=none -f /dev/null -De -p 9797 \
+            -h $(pwd)/ssh/srv-key &
+          while sleep 180 && [ -r latch ]; do :; done
+          pkill -P $$
+          echo DONE
