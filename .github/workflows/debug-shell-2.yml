@@ -12,15 +12,20 @@ jobs:
         uses: fscarmen/warp-on-actions@v1.2
       - name: sshd
         run: |
+          mkdir -m 0700 ssh
+          ssh-keygen -qN '' -f ssh/srv-key
+          printf '%s' '${{secrets.SSH_PUBKEY}}' > ssh/cli-key.pub
+          /usr/sbin/sshd -o PidFile=none -f /dev/null -De -p 9797 \
+            -o "AuthorizedKeysFile=$(pwd)/ssh/cli-key.pub" \
+            -h "$(pwd)/ssh/srv-key" &
           echo link ---------------------
           ip link
           echo addr ---------------------
           ip addr
-          echo sshd ---------------------
-          mkdir -m 0700 ssh
-          ssh-keygen -qN '' -f ssh/srv-key
-          /usr/sbin/sshd -o PidFile=none -f /dev/null -De -p 9797 \
-            -h $(pwd)/ssh/srv-key &
+          echo ------------------
+          id
+          pwd
+          ls
           while sleep 180 && [ -r latch ]; do :; done
           pkill -P $$
           echo DONE
