@@ -5,12 +5,6 @@ on:
       cmd:
         type: string
         default: touch CONFIGURED
-      src:
-        type: string
-        default: ${{github.ref_name}}
-      dst:
-        type: string
-        default: ${{github.ref_name}}-auto
 jobs:
   auto:
     runs-on: ubuntu-latest
@@ -19,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{inputs.src}}
+          ref: main
       - name: auto
         run: |
           set -ex
@@ -27,7 +21,7 @@ jobs:
           email=$(git log -n1 --author="$user" --format=format:%ae)
           git config user.name "$user[sync]"
           git config user.email "${email:-actions@github.com}"
-          git checkout -b ${{inputs.dst}}
+          git checkout -b main-auto
           ${{inputs.cmd}}
           git add -f .
           git diff --cached --quiet ||
