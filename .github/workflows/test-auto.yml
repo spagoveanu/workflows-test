@@ -1,0 +1,35 @@
+name: Autoreconf
+on:
+  workflow_dispatch:
+    inputs:
+      cmd:
+        type: string
+        default: touch CONFIGURED
+      src:
+        type: string
+        default: ${{github.ref_name}}
+      dst:
+        type: string
+        default: ${{github.ref_name}}-auto
+jobs:
+  auto:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{inputs.src}}
+      - name: auto
+        run: |
+          set -ex
+          user=${{github.repository_owner}}
+          email=$(git log -n1 --author="$user" --format=format:%ae)
+          git config user.name "$user[sync]"
+          git config user.email "${email:-actions@github.com}"
+          git checkout -b ${{inputs.dst}}
+          ${{inputs.cmd}}
+          git add -f .
+          git diff --cached --quiet ||
+            git commit -m "[auto] $(git show --quiet --pretty=format:%s)"
+          git push -f -u origin HEAD
